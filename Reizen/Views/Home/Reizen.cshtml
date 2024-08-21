@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Reis>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>@ViewBag.Bestemming</h1>
+<h1>
+    <img src="~/Images/@(ViewBag.Bestemming).jpg" />
+</h1>
+@if (Model != null)
+{
+    <table class="table-striped">
+        <thead>
+            <tr>
+                <th>Vertrek</th>
+                <th>Prijs per persoon</th>
+                <th>Aantal dagen</th>
+                <th>Boeken</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var boeking in Model!)
+            {
+                <tr>
+                    <td>@boeking.Vertrek</td>
+                    <td>@boeking.PrijsPerPersoon</td>
+                    <td>@boeking.AantalDagen</td>
+                    <td>
+                        @if (boeking.Vertrek > DateOnly.FromDateTime(DateTime.Now))
+                        {
+                            <a asp-action="Zoekform" asp-route-id="@boeking.Id" asp-route-code="@boeking.Bestemmingscode">Boeken</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Werelddeel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Werelddelen</h1>
+@if (Model != null)
+{
+   <table>
+       <tbody>
+           @foreach (var wdeel in Model!)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Land" asp-route-id="@wdeel.Id">@wdeel.Naam</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+   </table>
+}

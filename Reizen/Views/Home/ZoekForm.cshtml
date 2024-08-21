@@ -1,0 +1,55 @@
+﻿@model ZoekKlantViewModel
+@{
+    ViewData["Title"] = "Zoekformulier";
+}
+<div>
+    <h6>Bestemming</h6>
+    <p>@ViewBag.Bestemming</p>
+    <h6>Vertrek</h6>
+    <p>@ViewBag.Vertrek</p>
+    <h6>Aantal dagen</h6>
+    <p>@ViewBag.Dagen</p>
+    <h6>Prijs per persoon</h6>
+    <p>@ViewBag.Prijs</p>
+</div>
+
+<form asp-action="ZoekKlant" method="get">
+    <div>
+        <label asp-for="BeginFamilienaam"></label>
+        <input asp-for="BeginFamilienaam" />
+        <span asp-validation-for="BeginFamilienaam" class="text-danger"></span>
+    </div>
+    <input type="submit" value="Zoeken" class="btn btn-primary ms-3 mt-2" />
+
+</form>
+
+@if (Model?.Klanten.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Familienaam</th>
+                <th>Voornaam</th>
+                <th>Adres</th>
+                <th>Woonplaats</th>
+                <th>Boeken</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var klant in Model.Klanten)
+            {
+                <tr>
+                    <td>@klant.Familienaam</td>
+                    <td>@klant.Voornaam</td>
+                    <td>@klant.Adres</td>
+                    <td>@klant.Woonplaats.Naam</td>
+                    <td>
+                        <a asp-action="Boeking" asp-route-id="@klant.Id">Boeken</a>
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@ViewBag.ErrorMessage
