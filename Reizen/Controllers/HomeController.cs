@@ -90,7 +90,10 @@ namespace Reizen.Controllers
             HttpContext.Session.SetInt32("AantalDagen", gekozenReis.AantalDagen);
             HttpContext.Session.SetString("PrijsPerPersoon", gekozenReis.PrijsPerPersoon.ToString("F2"));
 
-            
+            ViewBag.Bestemming = HttpContext.Session.GetString("Bestemming");
+            ViewBag.Vertrek = HttpContext.Session.GetString("Vertrek");
+            ViewBag.Dagen = HttpContext.Session.GetInt32("AantalDagen");
+            ViewBag.Prijs = HttpContext.Session.GetString("PrijsPerPersoon");
 
             return View(new ZoekKlantViewModel()); 
         }
@@ -103,6 +106,12 @@ namespace Reizen.Controllers
                 ToListAsync();
             if (form.Klanten == null)
                 ViewBag.ErrorMessage = $"zoekveld mag niet leeg zijn";
+
+            ViewBag.Bestemming = HttpContext.Session.GetString("Bestemming");
+            ViewBag.Vertrek = HttpContext.Session.GetString("Vertrek");
+            ViewBag.Dagen = HttpContext.Session.GetInt32("AantalDagen");
+            ViewBag.Prijs = HttpContext.Session.GetString("PrijsPerPersoon");
+
             return View("ZoekForm", form);
         }
 
