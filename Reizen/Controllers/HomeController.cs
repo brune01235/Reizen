@@ -76,7 +76,7 @@ namespace Reizen.Controllers
 
         public async Task<IActionResult> ZoekForm(int id, string code) 
         {
-            var bestemming = await bestemmingRepository.GetBestemming(code);
+            var gekozenBestemming = await bestemmingRepository.GetBestemming(code);
             var gekozenReis = await reisRepository.GetReis(id);
             if (gekozenReis == null) 
             { 
@@ -85,10 +85,12 @@ namespace Reizen.Controllers
 
             ;
 
-            ViewBag.Bestemming = bestemming.Plaats;
-            ViewBag.Vertrek = gekozenReis.Vertrek;
-            ViewBag.Dagen = gekozenReis.AantalDagen;
-            ViewBag.Prijs = gekozenReis.PrijsPerPersoon;
+            HttpContext.Session.SetString("Bestemming", gekozenBestemming.Plaats);
+            HttpContext.Session.SetString("Vertrek", gekozenReis.Vertrek.ToString("dd-MM-yyyy"));
+            HttpContext.Session.SetInt32("AantalDagen", gekozenReis.AantalDagen);
+            HttpContext.Session.SetString("PrijsPerPersoon", gekozenReis.PrijsPerPersoon.ToString("F2"));
+
+            
 
             return View(new ZoekKlantViewModel()); 
         }

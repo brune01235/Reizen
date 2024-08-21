@@ -1,6 +1,11 @@
 ﻿@model ZoekKlantViewModel
 @{
     ViewData["Title"] = "Zoekformulier";
+
+    var bestemming = HttpContext.Session.GetString("Bestemming");
+    var vertrek = HttpContext.Session.GetString("Vertrek");
+    ViewBag.Dagen = HttpContext.Session.GetInt32("AantalDagen");
+    ViewBag.Prijs = HttpContext.Session.GetString("PrijsPerPersoon");
 }
 <div>
     <h6>Bestemming</h6>

@@ -1,13 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Reizen.Models;
 using Reizen.Models.Repositories;
+using System.Diagnostics.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ReizenContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ReizenConnection")));
-
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSession();
+builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IWerelddeelRepository, SQLWerelddeelRepository>();
 builder.Services.AddTransient<ILandRepository, SQLLandenRepository>();
 builder.Services.AddTransient<IBestemmingRepository, SQLBestemmingRepository>();
@@ -29,6 +32,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
