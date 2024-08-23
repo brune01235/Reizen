@@ -20,6 +20,11 @@ namespace Reizen.Models.Repositories
         {
             return await context.Bestemmingen.ToListAsync();
         }
+
+        public async Task<List<Bestemming>> GetBestemmingenByLandId(int landId)
+        {
+            return await context.Bestemmingen.Where(bestemming => bestemming.Landid == landId).OrderBy(bestemming => bestemming.Plaats).ToListAsync();
+        }
     }
 }
 

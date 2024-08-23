@@ -20,5 +20,13 @@ namespace Reizen.Models.Repositories
         {
             return await context.Landen.ToListAsync();
         }
+
+        public async Task<List<Land>> GetLandenByWerelddeelId(int werelddeelId)
+        {
+            return await context.Landen
+                .Where(land => land.Werelddeelid == werelddeelId)
+                .OrderBy(land => land.Naam)
+                .ToListAsync();
+        }
     }
 }

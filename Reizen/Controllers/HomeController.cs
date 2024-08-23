@@ -8,42 +8,43 @@ namespace Reizen.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ReizenContext context;
         private readonly IWerelddeelRepository werelddeelRepository;
         private readonly ILandRepository landRepository;
         private readonly IBestemmingRepository bestemmingRepository;
         private readonly IReisRepository reisRepository;
         private readonly IKlantRepository klantRepository;
+        private readonly IBoekingRepository boekingRepository;
 
-        public HomeController(ReizenContext context, IWerelddeelRepository werelddeelRepository, ILandRepository landRepository
-            ,IBestemmingRepository bestemmingRepository,IReisRepository reisRepository, IKlantRepository klantRepository)
+        public HomeController(IWerelddeelRepository werelddeelRepository, ILandRepository landRepository
+            , IBestemmingRepository bestemmingRepository, IReisRepository reisRepository, IKlantRepository klantRepository,
+            IBoekingRepository boekingRepository)
         {
-            this.context = context;
+
             this.werelddeelRepository = werelddeelRepository;
             this.landRepository = landRepository;
             this.bestemmingRepository = bestemmingRepository;
             this.reisRepository = reisRepository;
             this.klantRepository = klantRepository;
-            
+            this.boekingRepository = boekingRepository;
+
         }
 
-       
+
 
         public async Task<IActionResult> Index()
         {
-            
             return View(await werelddeelRepository.GetWerelddelen());
         }
 
         public async Task<IActionResult> Land(int id)
         {
             var gekozenWereldDeel = await werelddeelRepository.GetWerelddeel(id);
-            var landen = await context.Landen.Where(land => land.Werelddeelid == id).OrderBy(land => land.Naam).ToListAsync();
-            if (gekozenWereldDeel == null) 
+            var landen = await landRepository.GetLandenByWerelddeelId(id);
+            if (gekozenWereldDeel == null)
             {
                 return NotFound();
             }
-            
+
             ViewBag.WereldDeel = gekozenWereldDeel.Naam;
 
             return View(landen);
@@ -51,7 +52,7 @@ namespace Reizen.Controllers
 
         public async Task<IActionResult> Bestemmingen(int id)
         {
-            var bestemmingen = await context.Bestemmingen.Where(bestemming => bestemming.Landid == id).OrderBy(bestemming => bestemming.Plaats).ToListAsync();
+            var bestemmingen = await bestemmingRepository.GetBestemmingenByLandId(id);
             var gekozenLand = await landRepository.GetLand(id);
             if (gekozenLand == null) 
             { 
@@ -64,7 +65,7 @@ namespace Reizen.Controllers
 
         public async Task<IActionResult> Reizen(string code)
         {
-            var reizen = await context.Reizen.Where(reis => reis.Bestemmingscode == code).OrderBy(reis => reis.Vertrek).ToListAsync();
+            var reizen = await reisRepository.GetReizenByBestemmingCode(code);
             var gekozenBestemming = await bestemmingRepository.GetBestemming(code);
             if (gekozenBestemming == null) 
             { 
@@ -103,10 +104,7 @@ namespace Reizen.Controllers
         
         public async Task<IActionResult> ZoekKlant(ZoekKlantViewModel form)
         {
-            form.Klanten = await context.Klanten.Include(klant => klant.Woonplaats).
-                OrderBy(klant =>  klant.Familienaam).ThenBy(klant => klant.Voornaam).
-                Where(klant => klant.Familienaam.StartsWith(form.BeginFamilienaam)).
-                ToListAsync();
+            form.Klanten = await klantRepository.GetKLantenByFamilienaam(form.BeginFamilienaam);
             if (form.Klanten == null)
                 ViewBag.ErrorMessage = $"zoekveld mag niet leeg zijn";
 
@@ -149,32 +147,48 @@ namespace Reizen.Controllers
         [HttpPost]
         public async Task<IActionResult> Boeking(BoekingViewModel form) 
         {
-            if (form.AantalVolwassenen < 1)
+            if (ModelState.IsValid)
+            {
+                var boeking = new Boeking
+                {
+                    Klantid = (int)HttpContext.Session.GetInt32("KlantId"),
+                    Reisid = (int)HttpContext.Session.GetInt32("ReisId"),
+                    GeboektOp = DateOnly.FromDateTime(DateTime.Now),
+                    AantalVolwassenen = form.AantalVolwassenen,
+                    AantalKinderen = form.AantalKinderen,
+                    AnnulatieVerzekering = form.Annulatieverzekering
+                };
+
+                await boekingRepository.AddBoeking(boeking);
+
+
+                var reis = await reisRepository.GetReis(boeking.Reisid);
+                if (reis != null)
+                {
+                    reis.AantalVolwassenen += boeking.AantalVolwassenen;
+                    reis.AantalKinderen += boeking.AantalKinderen;
+                    await reisRepository.UpdateReis(reis);
+                }
+
+                await reisRepository.UpdateReis(reis);
+
+                int boekingsNummer = boeking.Id;
+
+                return RedirectToAction("Bevestiging", new { boekingId = boeking.Id });
+            }
+            else
             {
                 ModelState.AddModelError("", "Er moet minstens één volwassene zijn.");
                 return View("BoekingForm", form);
             }
 
-            var boeking = new Boeking
-            {
-                Klantid = (int)HttpContext.Session.GetInt32("KlantId"),
-                Reisid = (int)HttpContext.Session.GetInt32("ReisId"),
-                GeboektOp = DateOnly.FromDateTime(DateTime.Now),
-                AantalVolwassenen = form.AantalVolwassenen,
-                AantalKinderen = form.AantalKinderen,
-                AnnulatieVerzekering = form.Annulatieverzekering
-            };
-
-            context.Boekingen.Add(boeking);
-            await context.SaveChangesAsync();
-
-            int boekingsNummer = boeking.Id;
-
-            return RedirectToAction("Bevestiging", new { boekingId = boeking.Id });
+           
         }
         public async Task<IActionResult> Bevestiging(int boekingId)
         {
-            var boeking = await context.Boekingen.Include(b => b.Reis).Include(b => b.Klant).FirstOrDefaultAsync(b => b.Id == boekingId);
+
+
+            var boeking = await boekingRepository.GetBoeking(boekingId);
             if (boeking == null)
             {
                 return NotFound();

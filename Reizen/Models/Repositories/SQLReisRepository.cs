@@ -20,5 +20,16 @@ namespace Reizen.Models.Repositories
         {
             return await context.Reizen.ToListAsync();
         }
+
+        public async Task<List<Reis>> GetReizenByBestemmingCode(string bestemmingCode)
+        {
+            return await context.Reizen.Where(reis => reis.Bestemmingscode == bestemmingCode).OrderBy(reis => reis.Vertrek).ToListAsync();
+        }
+
+        public async Task UpdateReis(Reis reis)
+        {
+            context.Reizen.Update(reis);
+            await context.SaveChangesAsync();
+        }
     }
 }

@@ -13,9 +13,9 @@ public partial class Boeking
 
     public DateOnly GeboektOp { get; set; }
 
-    public int? AantalVolwassenen { get; set; }
+    public int AantalVolwassenen { get; set; }
 
-    public int? AantalKinderen { get; set; }
+    public int AantalKinderen { get; set; }
 
     public bool AnnulatieVerzekering { get; set; }
 

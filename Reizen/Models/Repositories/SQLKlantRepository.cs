@@ -21,5 +21,15 @@ namespace Reizen.Models.Repositories
         {
             return await context.Klanten.ToListAsync();
         }
+
+        public async Task<List<Klant>> GetKLantenByFamilienaam(string familienaam)
+        {
+            return await context.Klanten
+                         .Include(klant => klant.Woonplaats)
+                         .Where(klant => klant.Familienaam.StartsWith(familienaam))
+                         .OrderBy(klant => klant.Familienaam)
+                         .ThenBy(klant => klant.Voornaam)
+                         .ToListAsync();
+        }
     }
 }

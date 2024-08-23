@@ -18,7 +18,7 @@ namespace Reizen.Models.Repositories
 
         public async Task<List<Werelddeel>> GetWerelddelen()
         {
-            return await context.Werelddelen.ToListAsync();
+            return await context.Werelddelen.OrderBy(Werelddeel => Werelddeel.Naam).ToListAsync();
         }
     }
 }
