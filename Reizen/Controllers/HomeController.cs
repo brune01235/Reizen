@@ -159,7 +159,7 @@ namespace Reizen.Controllers
                     AnnulatieVerzekering = form.Annulatieverzekering
                 };
 
-                await boekingRepository.AddBoeking(boeking);
+                
 
 
                 var reis = await reisRepository.GetReis(boeking.Reisid);
@@ -167,10 +167,10 @@ namespace Reizen.Controllers
                 {
                     reis.AantalVolwassenen += boeking.AantalVolwassenen;
                     reis.AantalKinderen += boeking.AantalKinderen;
-                    await reisRepository.UpdateReis(reis);
+                    await boekingRepository.AddBoeking(boeking, reis);
                 }
 
-                await reisRepository.UpdateReis(reis);
+                
 
                 int boekingsNummer = boeking.Id;
 

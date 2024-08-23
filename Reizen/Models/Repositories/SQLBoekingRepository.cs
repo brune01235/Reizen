@@ -21,9 +21,10 @@ namespace Reizen.Models.Repositories
             return await context.Boekingen.ToListAsync();
         }
 
-        public async Task AddBoeking(Boeking boeking)
+        public async Task AddBoeking(Boeking boeking, Reis reis)
         {
             context.Boekingen.Add(boeking);
+            context.Reizen.Update(reis);
             await context.SaveChangesAsync();
         }
     }
