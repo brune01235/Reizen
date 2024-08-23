@@ -15,6 +15,7 @@ builder.Services.AddTransient<IWerelddeelRepository, SQLWerelddeelRepository>();
 builder.Services.AddTransient<ILandRepository, SQLLandenRepository>();
 builder.Services.AddTransient<IBestemmingRepository, SQLBestemmingRepository>();
 builder.Services.AddTransient<IReisRepository, SQLReisRepository>();
+builder.Services.AddTransient<IKlantRepository, SQLKlantRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

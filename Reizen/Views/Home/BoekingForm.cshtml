@@ -1,0 +1,44 @@
+﻿@model BoekingViewModel
+
+@{
+    ViewData["Title"] = "Boeking bevestigen";
+}
+<h1>Reis</h1>
+<div>
+    <h6><strong>Bestemming</strong></h6>
+    <p>@ViewBag.Bestemming</p>
+    <h6><strong>Vertrek</strong></h6>
+    <p>@ViewBag.Vertrek</p>
+    <h6><strong>Prijs per persoon</strong></h6>
+    <p>@ViewBag.Prijs</p>
+</div>
+<h1>Klant</h1>
+<div>
+    <p>@ViewBag.KlantNaam</p>
+    <p>@ViewBag.Adres</p>
+    <p>@ViewBag.Woonplaats</p>
+</div>
+
+<h1>Boeking</h1>
+
+<form asp-action="Boeking" method="post">
+    <div class="form-group">
+        <label for="AantalVolwassenen">Aantal volwassenen</label>
+        <input type="number" asp-for="AantalVolwassenen" class="form-control" min="1" required />
+        <span asp-validation-for="AantalVolwassenen" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="AantalKinderen">Aantal kinderen</label>
+        <input type="number" asp-for="AantalKinderen" class="form-control" min="0" />
+        <span asp-validation-for="AantalKinderen" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="AnnulatieVerzekering">Annulatieverzekering</label>
+        <input type="checkbox" asp-for="Annulatieverzekering" class="form-check-input" />
+        <span asp-validation-for="Annulatieverzekering" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Bevestigen</button>
+</form>
